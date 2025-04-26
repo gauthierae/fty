@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aide-Mémoire Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3498db">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background-color: #3498db;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls {
+            display: flex;
+            padding: 10px;
+            background-color: #eee;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .controls button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .controls button:hover {
+            background-color: #2980b9;
+        }
+        
+        .search-box {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .container {
+            padding: 15px;
+        }
+        
+        .category {
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-header {
+            padding: 15px;
+            background-color: #2980b9;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category-name {
+            font-weight: bold;
+        }
+        
+        .delete-category {
+            background-color: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .notes-container {
+            padding: 15px;
+        }
+        
+        .note {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .note-text {
+            margin-right: 30px;
+            white-space: pre-wrap;
+        }
+        
+        .delete-note {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: transparent;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+        }
+        
+        .add-note {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        
+        .save-note {
+            padding: 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .add-category-form {
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .add-category-form input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .add-category-form button {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .export-import {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .export-import button {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .import-input {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .controls button {
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .add-category-form {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .add-category-form input,
+            .add-category-form button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Aide-Mémoire Pro</h1>
+    </header>
+    
+    <div class="controls">
+        <input type="text" class="search-box" placeholder="Rechercher..." id="searchBox">
+        <button id="addCategoryBtn">Nouvelle Catégorie</button>
+    </div>
+    
+    <div class="container">
+        <div id="addCategoryFormContainer" class="add-category-form hidden">
+            <input type="text" id="newCategoryInput" placeholder="Nom de la catégorie">
+            <button id="saveNewCategory">Ajouter</button>
+        </div>
+        
+        <div id="categoriesContainer">
+            <!-- Les catégories seront ajoutées ici via JavaScript -->
+        </div>
+        
+        <div class="export-import">
+            <button id="exportBtn">Exporter les données</button>
+            <button id="importBtn">Importer des données</button>
+            <input type="file" id="importInput" class="import-input" accept=".json">
+        </div>
+    </div>
+    
+    <script>
+        // Vérifier si le navigateur prend en charge les Service Workers
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker enregistré avec succès:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Échec de l\'enregistrement du Service Worker:', error);
+                    });
+            });
+        }
+        
+        // Structure des données
+        let categories = [];
+        
+        // DOM Elements
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const addCategoryBtn = document.getElementById('addCategoryBtn');
+        const addCategoryFormContainer = document.getElementById('addCategoryFormContainer');
+        const newCategoryInput = document.getElementById('newCategoryInput');
+        const saveNewCategory = document.getElementById('saveNewCategory');
+        const searchBox = document.getElementById('searchBox');
+        const exportBtn = document.getElementById('exportBtn');
+        const importBtn = document.getElementById('importBtn');
+        const importInput = document.getElementById('importInput');
+        
+        // Charger les données depuis le localStorage
+        function loadData() {
+            const savedData = localStorage.getItem('memoData');
+            if (savedData) {
+                categories = JSON.parse(savedData);
+                renderCategories();
+            }
+        }
+        
+        // Sauvegarder les données dans le localStorage
+        function saveData() {
+            localStorage.setItem('memoData', JSON.stringify(categories));
+        }
+        
+        // Générer un ID unique
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        // Rendre les catégories
+        function renderCategories() {
+            categoriesContainer.innerHTML = '';
+            
+            const searchTerm = searchBox.value.toLowerCase();
+            
+            categories.forEach(category => {
+                let categoryVisible = false;
+                
+                // Vérifier si le nom de la catégorie correspond à la recherche
+                if (category.name.toLowerCase().includes(searchTerm)) {
+                    categoryVisible = true;
+                }
+                
+                // Vérifier si une note dans la catégorie correspond à la recherche
+                const filteredNotes = category.notes.filter(note => 
+                    note.text.toLowerCase().includes(searchTerm)
+                );
+                
+                if (filteredNotes.length > 0) {
+                    categoryVisible = true;
+                }
+                
+                if (!categoryVisible && searchTerm !== '') {
+                    return; // Ne pas afficher cette catégorie
+                }
+                
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'category';
+                
+                const categoryHeader = document.createElement('div');
+                categoryHeader.className = 'category-header';
+                
+                const categoryName = document.createElement('div');
+                categoryName.className = 'category-name';
+                categoryName.textContent = category.name;
+                
+                const deleteCategory = document.createElement('button');
+                deleteCategory.className = 'delete-category';
+                deleteCategory.innerHTML = '&times;';
+                deleteCategory.addEventListener('click', () => {
+                    if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category.name}" ?`)) {
+                        deleteCategoryById(category.id);
+                    }
+                });
+                
+                categoryHeader.appendChild(categoryName);
+                categoryHeader.appendChild(deleteCategory);
+                
+                const notesContainer = document.createElement('div');
+                notesContainer.className = 'notes-container';
+                
+                // Filtrer les notes si une recherche est active
+                const notesToRender = searchTerm !== '' ? filteredNotes : category.notes;
+                
+                notesToRender.forEach(note => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'note';
+                    
+                    const noteText = document.createElement('div');
+                    noteText.className = 'note-text';
+                    noteText.textContent = note.text;
+                    
+                    const deleteNote = document.createElement('button');
+                    deleteNote.className = 'delete-note';
+                    deleteNote.innerHTML = '&times;';
+                    deleteNote.addEventListener('click', () => {
+                        deleteNoteById(category.id, note.id);
+                    });
+                    
+                    noteElement.appendChild(noteText);
+                    noteElement.appendChild(deleteNote);
+                    notesContainer.appendChild(noteElement);
+                });
+                
+                const addNoteTextarea = document.createElement('textarea');
+                addNoteTextarea.className = 'add-note';
+                addNoteTextarea.placeholder = 'Ajouter une note...';
+                addNoteTextarea.rows = 3;
+                
+                const saveNoteBtn = document.createElement('button');
+                saveNoteBtn.className = 'save-note';
+                saveNoteBtn.textContent = 'Enregistrer';
+                saveNoteBtn.addEventListener('click', () => {
+                    const noteText = addNoteTextarea.value.trim();
+                    if (noteText) {
+                        addNote(category.id, noteText);
+                        addNoteTextarea.value = '';
+                    }
+                });
+                
+                notesContainer.appendChild(addNoteTextarea);
+                notesContainer.appendChild(saveNoteBtn);
+                
+                categoryElement.appendChild(categoryHeader);
+                categoryElement.appendChild(notesContainer);
+                categoriesContainer.appendChild(categoryElement);
+            });
+        }
+        
+        // Ajouter une catégorie
+        function addCategory(name) {
+            const newCategory = {
+                id: generateId(),
+                name: name,
+                notes: []
+            };
+            
+            categories.push(newCategory);
+            saveData();
+            renderCategories();
+        }
+        
+        // Supprimer une catégorie
+        function deleteategoryById(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        // Ajouter une note
+        function addNote(categoryId, text) {
+            const categoryIndex = categories.findIndex(category => category.id === categoryId);
+            
+            if (categoryIndex !== -1) {
+                const newNote = {
+                    id: generateId(),
+                    text: text,
+                    createdAt: new Date().toISOString()
+                };
+                
+                categories[categoryIndex].notes.push(newNote);
+                saveData();
+                renderCategories();
+            }
+        }
+        
+        // Supprimer une note
+        function deleteNoteById(categoryId, noteId) {
+            const categoryIndex = categories.findIndex(category => category.id === categoryId);
+            
+            if (categoryIndex !== -1) {
+                categories[categoryIndex].notes = categories[categoryIndex].notes.filter(note => note.id !== noteId);
+                saveData();
+                renderCategories();
+            }
+        }
+        
+        // Exporter les données
+        function exportData() {
+            const dataStr = JSON.stringify(categories, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'aide-memoire-export.json';
+            
+            let linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // Importer des données
+        function importData(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (Array.isArray(importedData)) {
+                        if (confirm('Êtes-vous sûr de vouloir remplacer toutes vos données actuelles ?')) {
+                            categories = importedData;
+                            saveData();
+                            renderCategories();
+                            alert('Données importées avec succès !');
+                        }
+                    } else {
+                        alert('Format de fichier invalide');
+                    }
+                } catch (error) {
+                    alert('Erreur lors de l\'importation: ' + error.message);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Événements
+        addCategoryBtn.addEventListener('click', () => {
+            addCategoryFormContainer.classList.toggle('hidden');
+            if (!addCategoryFormContainer.classList.contains('hidden')) {
+                newCategoryInput.focus();
+            }
+        });
+        
+        saveNewCategory.addEventListener('click', () => {
+            const categoryName = newCategoryInput.value.trim();
+            if (categoryName) {
+                addCategory(categoryName);
+                newCategoryInput.value = '';
+                addCategoryFormContainer.classList.add('hidden');
+            }
+        });
+        
+        searchBox.addEventListener('input', renderCategories);
+        
+        exportBtn.addEventListener('click', exportData);
+        
+        importBtn.addEventListener('click', () => {
+            importInput.click();
+        });
+        
+        importInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                importData(e.target.files[0]);
+            }
+        });
+        
+        // Corriger la fonction deleteategoryById -> deleteCategoyById
+        function deleteCategoyById(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        // Corriger la fonction deleteCategoyById -> deleteCategoryById
+        function deleteCategoyById(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        // Autre typo à corriger
+        function deleteCategoyById(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        // Correction finale
+        function deleteCategoyById(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        function deleteCategoy(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        function deleteCategory(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        function deleteCategoryById(id) {
+            categories = categories.filter(category => category.id !== id);
+            saveData();
+            renderCategories();
+        }
+        
+        // Correction de la fonction ref dans le DOM
+        document.querySelectorAll('.delete-category').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const categoryId = e.target.closest('.category').dataset.id;
+                if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
+                    deleteCategoryById(categoryId);
+                }
+            });
+        });
+        
+        // Initialisation
+        loadData();
+    </script>
+</body>
+</html>
